@@ -1,0 +1,11 @@
+@startuml
+scale 350 width
+[*] --> 用户
+用户 --> vip:充值3W
+用户 --> vip:财富等级>=60
+用户 --> vip:开通国王
+vip --> vip黑名单:销户
+vip --> vip黑名单:永封号
+vip --> vip黑名单:成为厅
+vip黑名单 --> [*]:删除
+@enduml

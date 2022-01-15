@@ -1,0 +1,41 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+actor 主播
+actor 家族长
+主播 -> 家族中心:发起解约申请
+家族中心 -> 家族DC:保存申请记录
+
+participant 家族管理
+participant 签约系统
+actor 运营人员
+家族管理 <- 运营人员:审核通过
+家族管理 -> 家族DC:更新申请状态为成功
+家族DC -> 签约系统:生成解约合同(上上签合同)
+
+家族中心 -> 家族DC:查询审核状态
+家族DC -> 家族中心:成功状态
+==签约==
+主播 -> 签约系统:签约合同
+家族长 -> 签约系统:签约合同
+家族DC -> 签约系统:轮询查询签约结果
+家族DC -> 家族DC:更新合同状态
+@enduml

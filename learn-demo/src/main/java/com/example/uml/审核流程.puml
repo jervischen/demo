@@ -1,0 +1,9 @@
+@startmindmap
+* 开播
+** lz-pp-review信息审核(审核后台)
+*** 保存到库lz_pp_review.review_record
+*** 提交到审核的后台reviewContentService.addContent
+** lz-pp-cover质量审核(内容管理后台)
+*** 标题liveTitleService.addReviewRecord
+**** 保存到库live_cover.title_review_record(内容管理后台从这里拿)
+@endmindmap

@@ -1,0 +1,11 @@
+@startuml
+participant app_pplive_core
+participant pp_rec_recommend_platform
+participant platfor_jar
+participant lz_pp_pp_core
+
+
+app_pplive_core --> pp_rec_recommend_platform:获取liveId
+pp_rec_recommend_platform -->platfor_jar:获取liveId
+platfor_jar --> lz_pp_pp_core:查询room获取直播节目id
+@enduml

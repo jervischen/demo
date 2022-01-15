@@ -1,0 +1,50 @@
+@startuml
+actor 用户
+actor 麦上嘉宾
+actor 开发人员
+box 客户端
+participant app
+participant h5
+participant 挂件
+end box
+
+box 服务端
+participant 送礼服务
+database kafka
+database redis
+database mysql
+participant 赛事服务
+control 赛事定时器
+end box
+==数据&数据初始化==
+
+开发人员 -> mysql:初始化赛程比赛数据
+开发人员 -> mysql:第一轮开始前初始化pk名单
+
+alt 定时器初始化
+赛事服务 -> 赛事定时器
+赛事定时器 -> 赛事定时器:自动结束未结束比赛定时器
+end
+
+==送礼&算分==
+用户 -> app:送礼
+app -> 送礼服务
+送礼服务 --> app
+app -->麦上嘉宾:魅力值
+送礼服务 -> kafka:送礼消息
+kafka -> 赛事服务
+赛事服务 -> 赛事服务:更新排行榜,保存送礼流水
+赛事服务 -> redis:更新缓存(原子操作)
+alt 定时器触发
+赛事定时器 ->赛事服务:定时触发(比赛开始、结束、每轮结束)
+赛事服务 -> 赛事服务:结算比赛最终得分,更新比赛状态
+赛事服务 -> redis: 更新缓存(更新排行榜,初始化下一场比赛)
+赛事服务 ->mysql:保存数据入库(每一场比赛结束)
+end
+==查询比赛状态&结果==
+用户 -> h5:点击h5连接
+h5->赛事服务:HTTP/GET获取数据
+==结束==
+@enduml
+
+

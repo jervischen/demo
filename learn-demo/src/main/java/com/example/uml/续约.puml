@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 主播
+actor 家族长
+actor 运营
+
+==短信提醒==
+家族web -> chatDC:上一旬第一天发送，每日发送私信/短信
+
+
+==发起申请==
+家族长 -> 家族web:发起签约申请
+家族web -> 家族DC:保存申请记录
+
+participant 签约系统
+participant 结算系统
+运营 -> 家族DC:同意签约,生成签约合同(上上签合同)
+==签约==
+主播 -> 签约系统:签约
+家族长 -> 签约系统:签约
+==更新状态==
+家族DC -> 签约系统:轮询查询签约结果
+家族DC -> 家族DC:更新签约/续约合同状态
+note right
+续约合同开始时间为旧合同结束时间当前旬的开始时间
+旧合同结束时间为续约合同开始时间减少1秒
+end note
+==注意统计和查询相关新增续约状态==
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+actor 主播
+actor 家族长
+家族长 -> 家族中心:发起签约申请
+家族中心 -> 家族DC:保存申请记录
+
+participant 签约系统
+participant 结算系统
+主播 -> 家族中心:同意签约
+家族中心 -> 家族DC
+家族DC -> 签约系统:生成签约合同(上上签合同)
+==签约==
+主播 -> 签约系统:签约合同
+家族长 -> 签约系统:签约合同
+家族DC -> 签约系统:轮询查询签约结果
+家族DC -> 家族DC:更新合同状态
+家族DC -> 结算系统:同步合同信息
+@enduml

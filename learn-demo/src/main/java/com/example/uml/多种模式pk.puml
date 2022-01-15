@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+actor 用户
+actor 主播
+participant pp约玩app
+participant pk系统
+participant 挂件系统
+participant 定时任务系统
+主播 -> pp约玩app:开启直播
+用户 -> 主播:送礼
+
+主播 -> pk系统:记录主播pk数据
+用户 -> pp约玩app:获取主播pk数据
+
+pp约玩app -> 挂件系统
+pp约玩app -> 用户:展示pk数据
+定时任务系统->pk系统:定时更新pk数据
+@enduml

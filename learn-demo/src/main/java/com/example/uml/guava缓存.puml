@@ -1,0 +1,67 @@
+@startuml
+
+interface PPLoadingCache{
+    void put(K key, V value)
+    V getUnchecked(K key)
+    V get(K key) throws ExecutionException
+    void refresh(K key)
+    void invalidate(K key)
+    void invalidateAll()
+    void stats()
+}
+abstract AbstractPPLoadingCache{
+    String cacheName
+    Function<K, V> function
+    LoadingCache<K, V> loadingCache
+
+    abstract void createLoadingCache()
+}
+
+class PPSizeLoadingCache{
+    createLoadingCache()
+}
+
+class PPWeightLoadingCache{
+    createLoadingCache()
+}
+class PPLoadingCacheProxy{
+    AbstractPPLoadingCache ppLoadingCache
+}
+
+class PPLoadingCacheFactory{
+    PPLoadingCacheFactory factory
+
+    createSizePPLoadingfCache()
+}
+
+class PPLoadingCacheManager{
+    Map<String, PPLoadingCacheProxy> loadingCacheMap
+    createLoadingCache()
+}
+
+class OtherCalss{
+ PPLoadingCacheManager PPLoadingCacheManager
+}
+
+PPLoadingCache <|.. AbstractPPLoadingCache
+
+AbstractPPLoadingCache <|-- PPSizeLoadingCache
+AbstractPPLoadingCache <|-- PPWeightLoadingCache
+
+
+PPLoadingCache <|.. PPLoadingCacheProxy
+AbstractPPLoadingCache  <--o PPLoadingCacheProxy
+
+PPLoadingCacheFactory --> PPLoadingCacheProxy
+PPLoadingCacheFactory --> PPLoadingCacheFactory
+note on link: 单例
+
+PPLoadingCacheManager --> PPLoadingCacheFactory
+
+PPLoadingCacheManager --> PPLoadingCacheManager
+note on link: 单例
+
+
+OtherCalss --> PPLoadingCacheManager
+note on link: 使用
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+participant 管理后台
+participant assist
+participant chat
+管理后台 -> assist: 保存/修改
+alt 发送对象
+assist -> assist:用户ID或者波段号
+else
+assist -> assist:认证点单陪玩、认证房间陪玩（包含主持和陪玩）
+else
+assist -> assist:当天注册用户、注册<=3天、注册<=7天
+end
+
+alt 发送时间
+assist -> assist:立即发送
+assist -> chat
+end
+==xxl==
+xxl --> assist: 定时获取定时私信
+assist -> chat: 发送私信
+@enduml

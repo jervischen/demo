@@ -1,0 +1,34 @@
+@startuml
+actor 主播
+
+participant app
+participant app_live_pp_core开播服务
+participant lz_live_amusement娱乐模式
+participant lz_user_verfify实名认证
+participant lz_pp_review敏感审核
+participant lz_live_cover封面审核
+participant studio
+==开播==
+app->app_live_pp_core开播服务:PPStartLiveConfigureService开播入口和服务推推流白名单配置
+主播 -> app:点击开播
+app -> app_live_pp_core开播服务:PPOpenLivePermissionService
+app_live_pp_core开播服务 -> lz_user_verfify实名认证:查询是否认证
+lz_user_verfify实名认证 --> app_live_pp_core开播服务
+app -> app_live_pp_core开播服务:PPMyLivesInfoService获取上一次直播信息，同步封面和公告
+app -> app_live_pp_core开播服务:PPPubLiveService发布直播
+app_live_pp_core开播服务 -> lz_pp_review敏感审核:敏感词汇过滤标题、公告、封面
+lz_pp_review敏感审核 --> app_live_pp_core开播服务
+app_live_pp_core开播服务 -> lz_pp_review敏感审核:质量审核(pp的运营)
+app ->app:开播页面并弹窗《直播服务协议》
+app ->app_live_pp_core开播服务:PPOpenLiveService开播
+app_live_pp_core开播服务 -> lz_live_amusement娱乐模式:设置为娱乐模式
+
+app_live_pp_core开播服务-->app:返回开播信息
+app -> app:拉起qq空间分享
+app -> app:进入直播间,开播成功
+==关播==
+app->app_live_pp_core开播服务:PPCloseLiveService收听人数、评论总数、收入pp钻
+app_live_pp_core开播服务->studio:PPLiveFansRankListService
+studio-->app_live_pp_core开播服务:结束页面展示数据
+==结束==
+@enduml

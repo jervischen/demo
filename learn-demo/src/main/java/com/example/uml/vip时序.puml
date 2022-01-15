@@ -1,0 +1,30 @@
+@startuml
+==成为vip==
+participant kafka
+participant xxl
+participant vip服务
+participant  奖励
+kafka <-- vip服务:开通国王/财富等级>=60/充值消息
+vip服务 --> vip服务:开通vip1记录到vip表
+vip服务 --> 奖励:发放vip1奖励
+kafka <-- vip服务:充值消息
+vip服务 --> vip服务:记录充值记录，按周，每周一条
+xxl --> vip服务:一周触发一次
+vip服务 --> vip服务:两周一个结算期，计算前两周充值金额
+vip服务 -->vip服务:根据充值金额判断vip等级
+note right
+ vip1-->15000元以下
+ vip2-->15000-49999元
+ vip3-->50000-124999元
+ vip4-->125000-249999元
+ vip5-->250000元以上
+end note
+vip服务 --> 奖励:vip1奖励:vip勋章、专属于管家私信
+vip服务 --> 奖励:vip2奖励:送礼飘屏、小礼物特效 新增送礼金币条件
+vip服务 --> 奖励:vip3奖励:座驾、气泡、头像框
+vip服务 --> 奖励:vip4奖励:无
+vip服务 --> 奖励:vip5奖励:礼物冠名
+===剔除vip===
+xxl --> vip服务:查询用户状态 永久封禁/厅白名单/销户
+vip服务 <-- vip服务:进入vip黑名单
+@enduml

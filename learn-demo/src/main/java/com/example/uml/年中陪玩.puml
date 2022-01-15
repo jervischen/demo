@@ -1,0 +1,20 @@
+@startuml
+participant h5
+participant activity
+participant core
+participant chat
+participant user
+==恋人盲盒==
+h5 -> activity:音色、性别、人设
+activity -> core:获取所有陪玩#新增接口过滤有订单的#getDoingOrderNjIdSet#
+activity -> user:查询所有陪玩的音色和人设##
+activity -> activity:过滤陪玩音色和人设
+activity -> chat:查询陪玩在线状态#chat-getRongOnlineStatus#或#core-getOnlineStatus#
+activity -> chat:过滤陪玩在线状态
+activity -> activity:随机选出一位
+activity -> core:获取语音资源#playerMediaList#
+h5 -> core:点解立即约他，发送陪玩优惠券#core-inCreaseCoupon#
+==陪伴广场==
+h5 -> core:指定用户id和陪玩技能获取#core-getUserSkillList#
+h5 -> core:判断用户是否为陪玩显示button#getIsPlayer#
+@enduml

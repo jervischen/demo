@@ -1,0 +1,43 @@
+@startuml
+==微信注册==
+participant APP
+participant 前端服务
+participant 鉴权websdk
+participant H5
+participant activity
+participant 鉴权DC
+participant xxl
+participant user
+participant kafka
+前端服务 --> 鉴权websdk:微信授权
+前端服务 <-- 鉴权websdk:获取code
+前端服务 --> H5:带着code和用户信息
+H5 --> 鉴权DC:返回微信头像、昵称、性别
+H5 --> user:注册
+H5 --> activity:生成邀约关系
+==手机号绑定==
+前端服务 --> 鉴权websdk:获取验证码
+前端服务 <-- 鉴权websdk:返回验证码
+前端服务 --> 鉴权websdk:带着手机号码和验证码
+前端服务 <-- 鉴权websdk:返回获取authCode
+前端服务 --> H5:带着authCode
+H5 --> user:绑定用户
+user --> H5
+==设备码绑定==
+APP --> user:登录
+user --> kafka:登录消息
+activity --> kafka:获取登录消息
+activity --> activity:判断用户是否为邀约用户和新设备
+alt 是
+    activity --> activity:修改为绑定成功状态
+else 否
+    activity --> kafka:返回true
+end
+==统计被邀约用户消费金币==
+activity --> kafka:消费送礼+互动 水晶球 深夜食堂 贵族
+activity --> activity:保存流水记录
+xxl --> activity:统计结算周期内是否满足奖励
+activity --> activity:更新邀约记录的奖励
+==首充==
+activity --> kafka:首笔单笔充值金额1000元奖励
+@enduml

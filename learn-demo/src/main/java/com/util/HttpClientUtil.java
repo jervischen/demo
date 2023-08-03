@@ -1,7 +1,7 @@
 package com.util;
 
 import com.alibaba.fastjson.JSON;
-import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
@@ -27,7 +27,6 @@ import java.util.Map;
 public class HttpClientUtil {
 
     public static String doGet(String url, Map<String, String> param) {
-
         // 创建Httpclient对象
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -47,9 +46,53 @@ public class HttpClientUtil {
             HttpGet httpGet = new HttpGet(uri);
             httpGet.setHeader("lz-accept-language", "ar");
             httpGet.setHeader("qrCode", "123");
+            httpGet.setHeader("Authorization","Bearer t-g1046t9X2RU7AG5WCH5PR2DOZFBBGANJ4CRXPC5S");
             // 执行请求
             response = httpclient.execute(httpGet);
-            // 判断返回状�?是否�?00
+            if (response.getStatusLine().getStatusCode() == 200) {
+                resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (response != null) {
+                    response.close();
+                }
+                httpclient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return resultString;
+    }
+
+    public static String doGet(String url, Map<String, Object> param,Map<String, String> header) {
+        // 创建Httpclient对象
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+
+        String resultString = "";
+        CloseableHttpResponse response = null;
+        try {
+            // 创建uri
+            URIBuilder builder = new URIBuilder(url);
+            if (param != null) {
+                for (String key : param.keySet()) {
+                    builder.addParameter(key, String.valueOf(param.get(key)));
+                }
+            }
+            URI uri = builder.build();
+
+            // 创建http GET请求
+            HttpGet httpGet = new HttpGet(uri);
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                httpGet.setHeader(entry.getKey(), entry.getValue());
+            }
+
+
+            // 执行请求
+            response = httpclient.execute(httpGet);
             if (response.getStatusLine().getStatusCode() == 200) {
                 resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
             }
@@ -114,7 +157,7 @@ public class HttpClientUtil {
         return doPost(url, null);
     }
 
-    public static void doPostJson(String url,  Map<String, Object> param) {
+    public static String doPostJson(String url,  Map<String, Object> param) {
         // 获得Http客户端(可以理解为:你得先有一个浏览器;注意:实际上HttpClient与浏览器是不一样的)
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
@@ -131,6 +174,7 @@ public class HttpClientUtil {
         httpPost.setEntity(entity);
 
         httpPost.setHeader("Content-Type", "application/json;charset=utf8");
+        httpPost.setHeader("Authorization","Bearer t-g10475cr2Z2O5QWQI2FAFHRXEGNOBIAQVEJ5CFUU");
 
         // 响应模型
         CloseableHttpResponse response = null;
@@ -138,12 +182,10 @@ public class HttpClientUtil {
             // 由客户端执行(发送)Post请求
             response = httpClient.execute(httpPost);
             // 从响应模型中获取响应实体
-            HttpEntity responseEntity = response.getEntity();
-
-            System.out.println("响应状态为:" + response.getStatusLine());
-            if (responseEntity != null) {
-                System.out.println("响应内容长度为:" + responseEntity.getContentLength());
-                System.out.println("响应内容为:" + EntityUtils.toString(responseEntity));
+            int statusCode = response.getStatusLine().getStatusCode();
+            // 打印响应结果
+            if (statusCode == HttpStatus.SC_OK) {
+                return EntityUtils.toString(response.getEntity(), "utf-8");
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -164,6 +206,7 @@ public class HttpClientUtil {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
 

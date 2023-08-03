@@ -15,5 +15,7 @@ public class TestLock {
         System.out.println(at.getAndAdd(1));
         System.out.println(at.get());
         System.out.println(at.incrementAndGet());
+
+        System.out.println(2<<11);
     }
 }

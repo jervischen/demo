@@ -1,0 +1,28 @@
+@startuml
+
+participant client
+participant "礼物AS" as gas
+participant "礼物DC" as gdc
+participant "特效DC" as edc
+participant "审核服务" as audit
+participant "礼物DB" as db
+
+client -> gas : 送礼请求\nRequestLiveGiveGift
+gas -[#blue]> gas : 旧版本拦截
+note left: 蓝色箭头为新增\n或修改逻辑
+gas -[#blue]> gas : 填空礼物\n参数校验
+gas -[#blue]> audit : 文案机审
+gas <[#blue]- audit
+gas -> gdc : 送礼请求
+gdc -[#blue]> db : 写入填空礼物记录表\n和送礼预下单表
+rnote over gdc : 送礼支付（略）
+gas <- gdc : 返回\n送礼结果
+gas -> edc : 构建送礼特效
+edc -[#blue]> db : 获取填空文案数据
+edc <[#blue]- db :
+rnote over gdc : 构建送礼特效（略）
+edc -> edc : 特效推送
+gas <- edc :
+client <- gas : 返回送礼结果
+
+@enduml

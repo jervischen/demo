@@ -1,6 +1,8 @@
 package javaagent;
 
 
+import com.sun.tools.attach.VirtualMachine;
+
 /**
  * @author Chen Xiao
  * @since 2021-10-15 20:08
@@ -8,7 +10,7 @@ package javaagent;
 public class Attach {
     public static void main(String[] args)  {
 //        // 85355 表示目标进程的PID
-//        VirtualMachine virtualMachine = VirtualMachine.attach("25850");
+        VirtualMachine virtualMachine = VirtualMachine.attach("25850");
 //        // 指定Java Agent的jar包路径
 //        try {
 //

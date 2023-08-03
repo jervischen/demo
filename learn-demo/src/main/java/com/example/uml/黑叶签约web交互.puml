@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 主播
+actor 家族长
+participant 家族h5
+participant 家族DC
+participant 签约sdk
+participant 签约系统
+
+==管理员端 收到邀请==
+主播 --> 家族h5:获取邀约 /playerSign/player/signList
+主播 --> 家族h5:点击签署
+主播 --> 家族h5:查询是否认证 /family/getPersonalVerifyStatus
+主播 --> 家族h5:获取签约id /family/getSignId
+家族h5 --> 签约sdk:拉起签署合同页面
+签约sdk --> 签约系统:api/getTargetLink
+签约sdk --> 签约系统:签署成功回调签约中心
+主播 --> 家族h5:获取刚刚的签约状态/family/getSignIdStatus
+主播 --> 家族h5:签约成功，则调用/family/confirm
+==家族端 收到申请==
+家族长 --> 家族h5:获取申请列表 /family/familySignList
+家族长 --> 家族h5:点击签署
+家族长 --> 家族h5:获取签约id /family/getSignId
+家族h5 --> 签约sdk:拉起签署合同页面
+签约sdk --> 签约系统:api/getTargetLink
+签约sdk --> 签约系统:签署成功回调签约中心
+家族长 --> 家族h5:获取刚刚的签约状态/family/getSignIdStatus
+家族长 --> 家族h5:签约成功，则调用/family/confirm
+@enduml

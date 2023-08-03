@@ -1,0 +1,33 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+participant 结算中心
+participant 家族DC
+participant lz_pp_data
+database lz_pp_family as 家族数据库
+
+==创建家族==
+结算中心 --> 家族DC:获取厅信息
+家族DC --> 家族数据库:获取厅是否是新厅family_nj
+家族DC --> lz_pp_data:获取新用户付费人数UserConsumptionServiceImpl#getUserConsumptions
+家族DC --> 结算中心:返回数据给
+@enduml

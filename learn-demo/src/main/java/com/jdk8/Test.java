@@ -1,9 +1,13 @@
 package com.jdk8;
 
+import com.alibaba.fastjson.JSONObject;
+import com.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Chen Xiao
@@ -42,11 +46,26 @@ public class Test {
     /**
      * 访问其他商店
      */
-    @org.junit.Test
     private static void doSomethingElse() {
-
+        long a = 360000000;
 
     }
 
+    @org.junit.Test
+    public void testFilter(){
+        JSONObject jsonObject = JSONObject.parseObject("{\"startTime\":\"2023-01-01 00:00:00\",\"endTime\":\"2023-04-01 00:00:00\"}");
+        Date startTime = jsonObject.getDate("startTime");
+        Date endTime = jsonObject.getDate("endTime");
+        System.out.println(startTime);
+        System.out.println(endTime);
+
+        long a = 360000000;
+        System.out.println(a);
+
+        Date startDate = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(7));
+        startDate = DateUtil.getDayStart(startDate);
+        Date endDate = new Date(startDate.getTime() + TimeUnit.DAYS.toMillis(7));
+        System.out.println("accessLevelsStartDate="+ startDate +"  "+ endDate);
+    }
 
 }

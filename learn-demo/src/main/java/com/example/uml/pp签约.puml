@@ -1,0 +1,91 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 普通用户
+actor 主播
+actor 家族长
+actor 运营
+participant 实名sdk
+participant 绑定手机h5
+participant 家族h5
+participant 家族web
+participant 运营后台
+participant 家族DC
+participant 签约sdk
+participant 签约系统
+participant 上上签
+database lz_pp_family as 家族数据库
+
+==创建家族==
+普通用户 --> 家族h5:获取当前账号家族信息\n /family/myFamily
+家族h5 --> 家族h5:判断企业、银行卡认证状态、运营审核状态\n /family/applyStatus
+普通用户 --> 家族h5:点击《创建家族》
+alt 第三方上上签页面
+家族h5 --> 签约sdk:完成企业认证
+签约sdk --> 签约sdk:企业认证相关流程
+家族h5 --> 签约sdk:完成银行卡认证
+签约sdk --> 签约sdk:银行卡相关认证流程
+end
+==主播上上签实名认证==
+家族h5 --> 家族web:获取主播认证状态\n /anchor/authStatus
+家族web --> 签约系统:获取主播的认证信息
+签约系统-->家族web:
+签约系统-->家族h5:返回主播认证状态
+alt 未完成实名认证
+    家族h5 --> 签约sdk:拉起实名认证页面
+    签约sdk --> 签约系统:提交实名认证信息
+    签约sdk --> 上上签:完成实名认证流程
+end
+==家族签约主播==
+家族长 --> 普通用户:发起邀约申请
+家族web --> 家族DC:保存邀请到数据库
+家族DC--> 家族数据库:contract生成记录
+普通用户 --> 家族web:查询邀约列表\n /anchor/myFamily
+家族web --> 家族DC:获取合同记录contractService.contractListV2
+家族DC --> 家族数据库:获取合同记录
+家族DC --> 家族h5
+普通用户 --> 家族h5:点击同意签约
+家族h5 --> 家族web:查询用户实名认证状态\n /anchor/authStatus
+alt 未认证，走上面的实名认证逻辑
+
+end
+alt 已认证
+家族h5 --> 家族web:发起签约\n /anchor/signContract
+家族web --> 家族DC:signService.signContract
+家族DC --> 签约系统:生成合同模板signContractService.initiateTemplateContract
+end
+==成员个人中心==
+家族h5 --> 家族web:我的流程列表\n /player/signs
+家族h5 --> 家族web:成员个人页(管理员和房间成员)\n /player/players
+==管理员个人中心==
+家族h5 --> 家族web:管理员个人页-我的成员\n /admin/players
+家族h5 --> 家族web:管理员个人页-数据查询 xxx接口
+家族h5 --> 家族web:成员管理-成员列表 /admin/playerSigns
+家族h5 --> 家族web:成员管理-加入的家族列表 /admin/myFamily
+==家族长个人中心==
+家族h5 --> 家族web:我的房间-管理员列表\n /family/adminSigns
+家族h5 --> 家族web:我的房间-数据查询 xxx接口
+家族h5 --> 家族web:我的房间-房间管理 /family/adminList
+==主播签约陪玩==
+
+
+@enduml

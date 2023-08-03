@@ -30,6 +30,7 @@ public class ExecutorsTest {
 //        Thread.sleep(1000);
 //        executor.execute(() -> sayHi("execute1"));
 //        executor.submit(() -> sayHi("submit"));
+
     }
 
     public static void sayHi(String name) {

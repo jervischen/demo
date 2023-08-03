@@ -11,12 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-/**
- * 批量增加(补发)积分
- *
- * @author tankun
- * @date 2019-11-15
- */
 public class BatchAddIntegral {
 
     private static boolean isPro = true;
@@ -26,7 +20,7 @@ public class BatchAddIntegral {
 
         BatchAddIntegral bu = new BatchAddIntegral();
         try {
-            List<String> items = Files.readLines(new File("/Users/chenxiao/IdeaProjects/mylearnproject/demo/learn-demo/src/main/java/com/util/1219女神.txt"), Charsets.UTF_8);
+            List<String> items = Files.readLines(new File("/Users/chenxiao/IdeaProjects/demo/learn-demo/src/main/java/com/util/1219男神.txt"), Charsets.UTF_8);
             for (String item : items) {
                 if (!Strings.isNullOrEmpty(item)) {
                     String[] ss = item.trim().split(",");
@@ -53,12 +47,12 @@ public class BatchAddIntegral {
         con.setUseCaches(false);
         //设置参数类型是json格式
         con.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-        con.setRequestProperty("Cookie", "token=5d7c9d21e34e49acb10ac4c74c9cd5dd");
+        con.setRequestProperty("Cookie", "token=c642d4600ac74ab5a2eac520adb4d422");
 
         con.connect();
         String body = "{\"userIds\":[\"" + uid
                 + "\"],\"awards\":[{\"count\":" + score
-                + ",\"awardType\":\"INTEGRAL\",\"awardId\":\"4326\",\"awardName\":\"充值积分\"}],\"activityId\":\"5198257579043586687\"}";
+                + ",\"awardType\":\"INTEGRAL\",\"awardId\":\"5561\",\"awardName\":\"充值积分\"}],\"activityId\":\"5251920289870627455\"}";
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(con.getOutputStream(), "UTF-8"));
         System.out.println(body);
         writer.write(body);

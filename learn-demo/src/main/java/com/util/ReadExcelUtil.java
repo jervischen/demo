@@ -22,8 +22,16 @@ import java.util.List;
 public class ReadExcelUtil {
     public static void main(String[] args) throws IOException {
 
+//        readExcel(0);
 
-        readExcel(0);
+        sql();
+
+    }
+
+    public static void sql(){
+        List<String> list = new ArrayList<>();
+        String filePath = "/Users/chenxiao/IdeaProjects/demo/learn-demo/src/main/java/com/util/1226-0108VIP充值.xlsx";
+         readExcelMy(0, filePath);
     }
 
 
@@ -32,6 +40,34 @@ public class ReadExcelUtil {
         String filePath = "/Users/chenxiao/IdeaProjects/mylearnproject/demo/src/main/java/com/example/demo/excel/pp.xlsx";
         return readExcel(sheetNum, filePath);
     }
+
+
+
+    public static void readExcelMy(int sheetNum, String filePath) {
+        List<String> list = new ArrayList<>();
+        Workbook wb = readExcel(filePath);
+        if (wb != null) {
+            //获取第一个sheet
+            Sheet sheet = wb.getSheetAt(sheetNum);
+            //获取最大行数
+            int rownum = sheet.getPhysicalNumberOfRows();
+            //获取第一行
+            for (int i = 1; i < rownum; i++) {
+                Row row = sheet.getRow(i);
+                String userId = String.valueOf(row.getCell(0).getStringCellValue());
+                int coin = (int)row.getCell(1).getNumericCellValue() * 100 ;
+                String format = String.format("update user_week_recharge set money=%s where user_id=%s and week=202301;", coin, userId);
+                System.out.println(format);
+
+                if (i >=100){
+                    return;
+                }
+            }
+        }
+    }
+
+
+
 
     public static List<String> readExcel(int sheetNum, String filePath) {
         List<String> list = new ArrayList<>();

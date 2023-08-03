@@ -1,0 +1,76 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+actor 用户客户端 as user
+actor 陪玩客户端 as player
+participant 首页模块 as home
+participant 匹配模块 as match
+participant 通话模块 as call
+participant 支付模块 as pay
+participant 游戏模块 as game
+participant xxl
+participant 游戏平台 as gamePlatform
+
+==用户发起匹配==
+user --> home:获取游戏列表，协议xx
+user --> home:陪玩列表，协议xx
+user --> match:选择游戏，发起匹配xxx
+match --> pay:
+alt 够游戏币
+pay --> pay:扣游戏币
+else 不够游戏币
+pay --> pay:金币兑换成游戏币，再扣游戏币
+end
+match --> user:返回matchId
+user --> user:轮询匹配状态，协议xxx
+match --> player:推送匹配信息matchId、roundId、roomId
+==陪玩接受匹配==
+player --> match:接受/拒绝推送，协议xx
+alt 用户端
+match --> user:推送用户，陪玩已接听
+user --> call:拨打通话通话
+else 陪玩端
+match --> player:返回成功
+player --> call:拨打通话，协议xxx
+end
+==进入通话==
+player --> call:请求通话协议xxx
+==进入游戏==
+alt 首次游戏
+player --> game:获取客户端游戏初始化参数(matchId、gameRoundId、roomId)协议xx
+user --> game:获取客户端游戏初始化参数(matchId、gameRoundId、roomId)协议xx
+player -->player:首充进入游戏，初始化游戏(matchId、gameRoundId、roomId)，默认准备状态
+user --> user:首充进入游戏，初始化游戏(matchId、gameRoundId、roomId)，默认准备状态
+user --> user:开始游戏
+else 已在游戏房间，再次游戏
+user --> game:游戏列表,协议xxx
+user --> game:切换游戏,协议xxx
+game --> player:推送游戏切换信息
+user --> game:准备，协议xxx,扣款
+game --> game:扣款
+game --> player:推送游戏信息，用户已准备
+user --> user:调用游戏sdk
+player --> player:调用游戏sdk
+end
+==游戏结束和开始==
+gamePlatform --> xxl:推送开始和结束kafka
+xxl-->game:处理游戏逻辑，如保存记录游戏数据等
+@enduml

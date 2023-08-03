@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.util.DateUtil;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -116,11 +115,19 @@ public class TestList {
     @Test
     public void tesStreamMa1p(){
 //        System.out.println(Long.parseLong("123"));
-        long l = DateUtil.formatStrToNormalDate("2121-10-01 00:00:00").getTime() - System.currentTimeMillis();
-        System.out.println(l);
-        String format = String.format("%d.0000%d", 10, l);
-        Double aDouble = Double.valueOf(format);
-        System.out.println(aDouble);
+//        long l = DateUtil.formatStrToNormalDate("2121-10-01 00:00:00").getTime() - System.currentTimeMillis();
+//        System.out.println(l);
+//        String format = String.format("%d.0000%d", 10, l);
+//        Double aDouble = Double.valueOf(format);
+//        System.out.println(aDouble);
+
+        boolean before = new Date().before(DateUtil.parseSimple("2022-02-21 00:00:00"));
+        System.out.println(before);
+        boolean after = new Date().before(DateUtil.parseSimple("2022-02-20 00:00:00"));
+        System.out.println(after);
     }
+
+
+
 
 }

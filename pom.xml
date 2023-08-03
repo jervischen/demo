@@ -14,6 +14,7 @@
         <module>leet-code</module>
         <module>learn-jvm</module>
         <module>learn-async-profiler</module>
+        <module>learn-english</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -59,7 +60,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>20.0</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>

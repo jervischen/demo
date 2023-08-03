@@ -1,8 +1,15 @@
 package com.example.demo.iolearn;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * Created in 2018-02-28 16:35.
@@ -81,5 +88,34 @@ public class TestIO {
     public void PipedOutputStreamTest(){
         PipedInputStream in = new PipedInputStream();
         PipedOutputStream out = new PipedOutputStream();
+    }
+    @Test
+    public void testdian(){
+//        a("a","b");
+//        List<String> collect = Lists.newArrayList(1, 2).stream().map(s -> String.valueOf(s)).collect(Collectors.toList());
+//        for (String s : collect) {
+//            System.out.println(s);
+//        }
+//
+//        System.out.println(String.format("[%s]签约认证信息证失败,请去【个人信息页->签约中心】完成实名认证",111));
+        System.out.println(TimeUnit.SECONDS.convert(10000, MILLISECONDS));
+
+        ArrayList<Long> objects = Lists.newArrayList();
+        List<String> collect = objects.stream().map(String::valueOf).collect(Collectors.toList());
+        System.out.println(collect.isEmpty());
+
+        String[] strings = Lists.newArrayList().stream().map(String::valueOf).toArray(String[]::new);
+        System.out.println(strings);
+
+    }
+
+    public static Long a(){
+        return null;
+    }
+
+    public static void a(String... list){
+        for (String s : list) {
+            System.out.println(s);
+        }
     }
 }

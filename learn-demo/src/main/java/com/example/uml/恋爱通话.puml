@@ -1,0 +1,109 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 用户
+actor 陪玩
+participant web_pp_h5
+participant lz_pp_pp_core
+participant app_pp_common
+participant app_pp_chat
+participant lz_pp_chat
+
+==认证提交==
+用户 --> web_pp_h5:打开认证页面,获取音色列表/auth/heartbox/authlist
+web_pp_h5 --> lz_pp_chat:获取音色列表xxx接口
+用户 --> web_pp_h5:选取对应音色、录音
+用户 --> web_pp_h5:提交/auth/heartbox/commitAuth
+web_pp_h5 --> lz_pp_pp_core:提交PpBoxPlayerAuthService#commitAuth
+==首页底部tab==
+用户 --> app_pp_common:RequestPPACData.PreferTabData获取底部菜单
+app_pp_common --> app_pp_common:进行A/B test
+app_pp_common --> 用户:返回恋爱通话或语音通话
+==卡片首页==
+用户 -->app_pp_chat:新增IdL协议，RequestMatchCard
+app_pp_chat -->lz_pp_chat:获取卡片列表和价格
+==用户匹配==
+alt 发起匹配
+用户 --> app_pp_chat:发起匹配RequestMatchStart
+app_pp_chat --> lz_pp_chat:matchService.matchStart发起匹配，扣除金币
+else 取消匹配
+用户 --> app_pp_chat:取消匹配RequestMatchCancel
+app_pp_chat --> lz_pp_chat:matchService.matchCancel没有人接单，退还金币
+end
+alt 匹配中,推拉结合
+    loop 轮询
+    用户 --> app_pp_chat:轮询匹配结果,发起通话RequestPPOperateVoiceCallUserMatch
+    end
+else 推送
+     lz_pp_chat --> app_pp_chat:
+     用户 --> app_pp_chat:收到推送,发起通话RequestPPOperateVoiceCallUserMatch
+end
+==陪玩接听==
+alt 接受RequestMatchAcceptOperate
+    alt lock-matchId
+       陪玩 --> app_pp_chat:接受
+       app_pp_chat --> lz_pp_chat:operateType=1
+       lz_pp_chat --> lz_pp_chat:1、判断用户是否取消
+       lz_pp_chat --> lz_pp_chat:2、判断是否被接受/抢单
+       lz_pp_chat --> lz_pp_chat:3、匹配状态改为接受
+       lz_pp_chat --> app_pp_chat:返回成功
+    end
+    alt 拒绝RequestMatchAcceptOperate
+    app_pp_chat --> lz_pp_chat:operateType=2
+    lz_pp_chat --> lz_pp_chat:匹配状态改为拒绝
+    end
+    alt 用户取消匹配
+    陪玩 --> app_pp_chat:RequestMatchCancel
+    app_pp_chat --> lz_pp_chat:matchService.matchCancel
+    lz_pp_chat --> lz_pp_chat:1、判断是否被接受
+    lz_pp_chat --> lz_pp_chat:2、匹配状态改为取消
+    lz_pp_chat --> lz_pp_chat:3、退款
+    end
+end
+==xxl-MatchLoveCallPoolInitJob匹配池==
+alt 刷新匹配池A-中优先级
+    lz_pp_chat-->lz_pp_chat:1、根据性别获取音色列表
+    lz_pp_chat-->lz_pp_chat:2、根据音色获取陪陪列表
+    lz_pp_chat-->lz_pp_chat:3、过滤在线用户
+    lz_pp_chat-->lz_pp_chat:4、过滤10分钟中拒绝接单用户
+    lz_pp_chat-->lz_pp_chat:5、过滤陪玩时间订单120秒间隔
+    lz_pp_chat-->lz_pp_chat:6、过滤B组的匹配池
+    lz_pp_chat-->lz_pp_chat:7、为每个音色生成音色池
+    lz_pp_chat-->lz_pp_chat:8、生成性别池
+end
+alt 刷新匹配池B-低优先级
+    app_pp_chat-->lz_pp_chat:接受RequestMatchAcceptOperate
+    lz_pp_chat-->lz_pp_chat:1、接单3次，移除B组
+    app_pp_chat-->lz_pp_chat:拒绝RequestMatchAcceptOperate
+    lz_pp_chat-->lz_pp_chat:1、拒单5次，加入B组
+end
+alt 刷新匹配池C-高优先级
+    lz_pp_chat-->lz_pp_chat:获取根据用户组(区分性别)
+    lz_pp_chat-->lz_pp_chat:重走A组过滤规则
+    lz_pp_chat-->lz_pp_chat:生成匹配池
+end
+==xxl-MatchPathOnJob选中陪玩==
+lz_pp_chat-->lz_pp_chat:从C组选中符合条件陪玩
+lz_pp_chat-->lz_pp_chat:如果C组中人数不足，则A组中选中陪玩
+lz_pp_chat-->lz_pp_chat:如果A组中人数不足，则从性别池中选中陪玩
+
+@enduml

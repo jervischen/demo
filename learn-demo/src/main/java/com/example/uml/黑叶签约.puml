@@ -1,0 +1,61 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 主播
+actor 家族长
+participant 家族h5
+participant 家族DC
+participant 签约sdk
+participant 签约系统
+
+==原逻辑==
+家族长 --> 家族h5:邀请主播加入
+家族h5 --> 家族DC:family_sign生成数据
+主播 --> 家族h5:同意邀约
+家族h5 --> 家族DC:family_sign 状态改为成功，并在room_whitelist生成数据
+==电子签==
+家族长 --> 家族h5:邀请主播加入
+家族h5 --> 签约系统:判断是否企业认证
+alt 已认证
+家族h5 --> 家族DC:发起合同，生成contract数据
+家族h5 --> 签约sdk:拉起合同签约
+签约sdk --> 家族h5:签约成功
+家族长 -[#red]-> 家族h5:邀请主播加入
+家族h5 --> 家族DC:family_sign生成数据
+else 未认证
+家族h5 --> 签约sdk:拉起企业认证页面，提交认证信息，等待上上签审核
+end
+
+主播 --> 家族h5:主播同意邀约
+家族h5 --> 签约系统:判断是否主播是否认证认证
+alt 已认证
+主播 --> 家族h5:同意签约
+家族h5 --> 签约sdk:拉起合同签约
+签约sdk --> 家族h5:签约成功
+主播 -[#red]->家族h5:同意邀约
+家族DC -> 签约系统:轮询查询签约结果
+家族DC -> 家族DC:更新合同contract状态，更新family_sign状态，并在room_whitelist生成数据
+
+else 未认证
+家族h5 --> 签约sdk:拉起个人认证页面，提交认证信息，等待上上签审核
+end
+@enduml

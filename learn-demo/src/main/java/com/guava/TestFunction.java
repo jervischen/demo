@@ -1,8 +1,11 @@
 package com.guava;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import org.junit.Test;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.function.BinaryOperator;
 
 /**
@@ -20,6 +23,23 @@ public class TestFunction {
 
         String join = Joiner.on("_").join(1, 2, 3, 4, 5);
         System.out.println(join);
+
+        int week = weekOfYear(new Date());
+        System.out.println(week);
+    }
+
+
+    /**
+     * 获取第几周，从星期一开始
+     *
+     * @return
+     */
+    public static int weekOfYear(Date dt) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        calendar.setTime(dt);
+        int week = calendar.get(Calendar.WEEK_OF_YEAR);
+        return week;
     }
 
 
@@ -37,5 +57,11 @@ public class TestFunction {
 
         System.out.println(boss3.m4(88));
 
+    }
+    @Test
+    public void opt(){
+        Optional<Object> optional = Optional.of(111);
+        System.out.println(optional);
+        System.out.println(optional.orNull());
     }
 }

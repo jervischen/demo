@@ -2,6 +2,7 @@ package com.guava.ppcache.test;
 
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.guava.ppcache.bean.LoadingCacheConf;
 import com.guava.ppcache.bean.ThreadPoolConf;
 import com.guava.ppcache.cache.PPLoadingCacheManager;
@@ -11,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Chen Xiao
@@ -20,6 +23,12 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Slf4j
 public class TestLoadingCache {
+    /*音色*/
+    private static final String VOICE_CACHE = "voice_cache";
+    /*陪玩*/
+    private static final String PLAYER_CACHE = "player_cache";
+    /*是否陪玩*/
+    private static final String IS_PLAYER_CACHE = "is_player_cache";
     final CountDownLatch latch = new CountDownLatch(1);
 
     public Optional<String> load(String str) {
@@ -31,6 +40,15 @@ public class TestLoadingCache {
         }
         log.info("{} success to mock query db...", Thread.currentThread().getName());
         return Optional.of(str);
+    }
+
+    public List<Long> loadInt(int code) {
+        log.info("{} begin to mock query db... code[{}]", Thread.currentThread().getName(),code);
+       if (code == 1){
+           return Lists.newArrayList();
+       }
+//        log.info("{} success to mock query db...", Thread.currentThread().getName());
+        return Lists.newArrayList(2L,3L,4L);
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
@@ -79,7 +97,7 @@ public class TestLoadingCache {
     }
 
     @Test
-    public void clazzName(){
+    public void clazzName() {
         String cahce1 = TestLoadingCache.class.getName() + "_1";
         System.out.println(cahce1);
 
@@ -111,8 +129,43 @@ public class TestLoadingCache {
     }
 
     @Test
-    public void getCache(){
-        PPLoadingCacheProxy cacheByName = PPLoadingCacheManager.getCacheByName("111");
-        System.out.println(cacheByName);
+    public void getCache() throws InterruptedException {
+       PPLoadingCacheManager.getInstance()
+                .createLoadingCache(VOICE_CACHE
+                        , new LoadingCacheConf()
+                                .setRefreshAfterTime(60)
+                                .setExpireAfterTime(60)
+                                .setTimeUnit(TimeUnit.SECONDS)
+                                .setMaximumSize(1_000)
+                        , s -> this.loadInt((Integer) s));
+
+        PPLoadingCacheManager.getInstance()
+                .createLoadingCache(PLAYER_CACHE
+                        , new LoadingCacheConf()
+                                .setRefreshAfterTime(60)
+                                .setExpireAfterTime(60)
+                                .setTimeUnit(TimeUnit.SECONDS)
+                                .setMaximumSize(1_000)
+                        , s -> this.loadInt((Integer) s));
+
+   PPLoadingCacheManager.getInstance()
+                .createLoadingCache(IS_PLAYER_CACHE
+                        , new LoadingCacheConf()
+                                .setRefreshAfterTime(60)
+                                .setExpireAfterTime(60)
+                                .setTimeUnit(TimeUnit.SECONDS)
+                                .setMaximumSize(1_000)
+                        , s -> this.loadInt((Integer) s));
+
+
+
+        while (true){
+//            int i = new Random().nextInt(3) + 200;
+            int i =  200;
+            Thread.sleep(10000L);
+            List<Long> unchecked = (List<Long>) PPLoadingCacheManager.getInstance().getLoadingCacheProxy(PLAYER_CACHE).getUnchecked(i);
+            System.out.println("i=" + i + "  list=" + unchecked);
+        }
     }
+
 }

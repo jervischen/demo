@@ -1,0 +1,111 @@
+@startuml
+skinparam backgroundColor #EEEBDC
+skinparam handwritten true
+skinparam sequence {
+ArrowColor DeepSkyBlue
+ActorBorderColor DeepSkyBlue
+LifeLineBorderColor blue
+LifeLineBackgroundColor #A9DCDF
+
+ParticipantBorderColor DeepSkyBlue
+ParticipantBackgroundColor DodgerBlue
+ParticipantFontName Impact
+ParticipantFontSize 17
+ParticipantFontColor #A9DCDF
+
+ActorBackgroundColor aqua
+ActorFontColor DeepSkyBlue
+ActorFontSize 17
+ActorFontName Aapex
+}
+
+
+actor 普通用户
+actor 主播
+actor 家族长
+actor 运营
+participant 实名sdk
+participant 绑定手机h5
+participant 家族h5
+participant 家族web
+participant 运营后台
+participant 家族DC
+participant 签约sdk
+participant 签约系统
+
+==创建家族==
+普通用户 --> 家族h5:平台状态\n /user/platformStatus
+alt 未实名和未绑定
+普通用户 --> 实名sdk:实名认证
+普通用户 --> 绑定手机h5:绑定手机
+end
+家族h5 --> 家族web:查询企业、银行卡认证状态、运营审核状态\n /family/applyStatus
+普通用户 --> 家族h5:点击《去完成》
+家族h5 --> 签约sdk:完成企业认证
+签约sdk --> 签约sdk:企业认证相关流程
+家族h5 --> 签约sdk:完成银行卡认证
+签约sdk --> 签约sdk:银行卡相关认证流程
+普通用户 --> 家族h5:完善其他信息
+家族h5 --> 家族web:提交相关信息\n /family/create
+运营 --> 运营后台:审核用户提交家族的材料
+alt 驳回
+运营后台 --> 家族DC:获取申请列表xxx接口
+运营后台 --> 家族DC:改为拒绝状态xxx接口
+else 通过
+运营后台 -> 家族DC:改为通过状态xx接口并发送通过im
+普通用户 --> 家族长:普通用户变成家族长
+end
+==成为管理员==
+普通用户 --> 家族h5:点击申请家族
+家族h5 --> 家族web:查询照片和语音条状态\n /user/platformStatus
+alt 未完成
+家族h5 --> 跳转到个人页上传图片和语音条
+end
+普通用户 --> 家族h5:拉起输入框，输入id
+家族h5 --> 家族web:查询用户并返回角色(家族、管理员或者普通用户)\n /user/{band}/search
+普通用户 --> 家族h5:申请加入
+alt 未认证
+    家族h5 --> 家族web:返回实名认证状态\n /admin/authenStatus
+    家族h5 --> 签约sdk:实名认证流程
+    else 已认证
+    家族h5 --> 家族web:发起合同并返回签约Id\n  /admin/myFamily
+    家族h5 --> 签约sdk:签约合同流程
+end
+家族h5 --> 家族web:根据签约id获取签约状态\n /user/contract/{signId}/status
+==成为成员==
+普通用户 --> 家族h5:点击申请家族
+家族h5 --> 家族web:查询照片和语音条状态\n /user/platformStatus
+alt 未完成
+家族h5 --> 跳转到个人页上传图片和语音条
+end
+普通用户 --> 家族h5:拉起输入框，输入id
+家族h5 --> 家族web:查询用户并返回角色\n /user/{band}/search
+普通用户 --> 家族h5:申请加入 /admin/joinFamily
+家族h5 --> 家族web:判断是否签署过平台直播服务协议\n /player/signProtocol
+家族h5 --> 家族web:同意并申请签约\n /player/joinFamily
+==成员个人中心==
+家族h5 --> 家族web:我的流程列表\n /player/signs
+家族h5 --> 家族web:成员个人页(管理员和房间成员)\n /player/players
+==管理员个人中心==
+家族h5 --> 家族web:管理员个人页-我的成员\n /admin/players
+家族h5 --> 家族web:管理员个人页-数据查询 xxx接口
+家族h5 --> 家族web:成员管理-成员列表 /admin/playerSigns
+家族h5 --> 家族web:成员管理-加入的家族列表 /admin/myFamily
+==家族长个人中心==
+家族h5 --> 家族web:我的房间-管理员列表\n /family/adminSigns
+家族h5 --> 家族web:我的房间-数据查询 xxx接口
+家族h5 --> 家族web:我的房间-房间管理 /family/adminList
+==后台==
+alt 新家族审批
+家族h5 --> 运营后台:新家族审批列表 /family/applyList
+家族h5 --> 运营后台:驳回 /family/batchReject接口
+家族h5 --> 运营后台:批准 /family/batchPass接口
+end
+alt 家族管理
+家族h5 --> 运营后台:列表 /family/list
+家族h5 --> 运营后台:编辑 xxx接口
+家族h5 --> 运营后台:查看合同 xxx接口
+家族h5 --> 运营后台:导出合同 xxx接口
+end
+
+@enduml
